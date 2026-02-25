@@ -1,0 +1,60 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  background: #6a0ad6;
+  padding: 10px 16px 14px;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.header-top {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.header-pill {
+  width: 160px;
+  height: 24px;
+  border-radius: 999px;
+  background: #0c031b;
+}
+
+.header-bottom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+
+.title-group {
+  flex: 1;
+}
+
+.name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.countdown {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.countdown-text {
+  font-size: 16px;
+}

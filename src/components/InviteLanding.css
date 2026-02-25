@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;700&display=swap');
+
+.landing {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 32px 20px;
+  background: #f7f3ff;
+  font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+}
+
+.landing-card {
+  width: min(420px, 100%);
+  background: #fff;
+  border-radius: 22px;
+  padding: 56px 32px 40px;
+  box-shadow: 0 28px 60px rgba(64, 29, 146, 0.15);
+  text-align: center;
+  color: #1d143a;
+  position: relative;
+}
+
+.avatar-circle {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #8f22a9, #c83ee3);
+  display: grid;
+  place-items: center;
+  color: #f4e9ff;
+  font-size: 64px;
+  box-shadow: 0 18px 36px rgba(124, 29, 146, 0.2);
+}
+
+.landing-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #7c1d92;
+  margin-bottom: 8px;
+}
+
+.landing-subtitle {
+  margin: 0 0 32px;
+  color: #513768;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.landing-cta {
+  width: 100%;
+  padding: 16px 18px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(110deg, #c83ee3, #7c1d92);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  box-shadow: 0 14px 28px rgba(124, 29, 146, 0.25);
+}
+
+.landing-cta:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.02);
+}
+
+.landing-cta:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 20px rgba(124, 29, 146, 0.25);
+}
+
+.landing-cta:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.landing-error {
+  color: #dc2626;
+  font-size: 14px;
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+}

@@ -1,0 +1,152 @@
+.mylink {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 1rem;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+}
+
+.mylink-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.25rem;
+  padding: 2rem 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+}
+
+.mylink-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 0.75rem;
+  display: block;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mylink-pseudo {
+  font-size: 1.3rem;
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+}
+
+.mylink-subtitle {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 1.5rem;
+}
+
+.mylink-section h3 {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.mylink-desc {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 1rem;
+  line-height: 1.4;
+}
+
+.mylink-loader {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+/* ─── URL row ─── */
+.mylink-url-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.mylink-url {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: 0.8rem;
+  font-family: monospace;
+  outline: none;
+}
+
+.mylink-copy-btn {
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: #7c3aed;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.mylink-copy-btn:hover {
+  background: #6d28d9;
+}
+
+/* ─── Actions ─── */
+.mylink-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mylink-share-btn {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: #7c3aed;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.mylink-share-btn:hover {
+  background: #6d28d9;
+}
+
+.mylink-deactivate-btn {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.mylink-deactivate-btn:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+/* ─── Create button ─── */
+.mylink-create-btn {
+  padding: 0.85rem 1.5rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: #7c3aed;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.mylink-create-btn:hover {
+  background: #6d28d9;
+}

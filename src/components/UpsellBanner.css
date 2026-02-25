@@ -1,0 +1,44 @@
+.upsell-banner {
+  position: relative;
+  background: linear-gradient(135deg, #4c1d95, #7c3aed);
+  padding: 16px 40px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.upsell-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.upsell-text {
+  margin: 0;
+  font-size: 13px;
+  color: #e0e0e0;
+  line-height: 1.4;
+}
+
+.upsell-cta {
+  background: #fff;
+  color: #4c1d95;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.upsell-cta:hover {
+  opacity: 0.9;
+}
