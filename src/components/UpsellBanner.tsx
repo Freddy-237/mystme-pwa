@@ -2,22 +2,17 @@ import './UpsellBanner.css';
 
 type Props = {
   visible: boolean;
-  onClose: () => void;
   deepLink: string;
+  installLink: string;
+  onDismiss?: () => void;
 };
 
-export default function UpsellBanner({ visible, onClose, deepLink }: Props) {
+export default function UpsellBanner({ visible, deepLink, installLink, onDismiss }: Props) {
   if (!visible) return null;
 
-  const storeLink =
-    /android/i.test(navigator.userAgent)
-      ? 'https://play.google.com/store/apps/details?id=com.mystme.app'
-      : 'https://apps.apple.com/app/mystme/id000000000';
-
   const handleOpen = () => {
-    // Try deep link first, fallback to store
     const timeout = setTimeout(() => {
-      window.location.href = storeLink;
+      window.location.href = installLink;
     }, 1500);
     window.addEventListener(
       'blur',
@@ -29,13 +24,27 @@ export default function UpsellBanner({ visible, onClose, deepLink }: Props) {
 
   return (
     <div className="upsell-banner">
-      <button className="upsell-close" onClick={onClose}>✕</button>
-      <p className="upsell-text">
-        Télécharge <strong>MystMe</strong> pour continuer la conversation et débloquer toutes les fonctionnalités !
-      </p>
-      <button className="upsell-cta" onClick={handleOpen}>
-        Ouvrir l'app
-      </button>
+      {onDismiss && (
+        <button className="upsell-close" onClick={onDismiss} aria-label="Fermer">
+          ✕
+        </button>
+      )}
+
+      <p className="upsell-title">🚀 Continue la conversation dans l'app MystMe</p>
+      <ul className="upsell-points">
+        <li>Notifications instantanées</li>
+        <li>Historique conservé</li>
+        <li>Anonymat garanti</li>
+      </ul>
+
+      <div className="upsell-actions">
+        <button className="upsell-cta" onClick={handleOpen}>
+          Ouvrir dans l'app
+        </button>
+        <a className="upsell-secondary" href={installLink} target="_blank" rel="noopener noreferrer">
+          Installer l'app
+        </a>
+      </div>
     </div>
   );
 }

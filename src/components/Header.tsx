@@ -3,9 +3,10 @@ import './Header.css';
 type Props = {
   name: string;
   countdownLabel?: string;
+  onResetIdentity?: () => void;
 };
 
-export default function Header({ name, countdownLabel }: Props) {
+export default function Header({ name, countdownLabel, onResetIdentity }: Props) {
   return (
     <header className="header">
       <div className="header-top">
@@ -22,6 +23,16 @@ export default function Header({ name, countdownLabel }: Props) {
           <span role="img" aria-label="timer">⏲️</span>
           <span className="countdown-text">{countdownLabel ?? ''}</span>
         </div>
+        {onResetIdentity && (
+          <button
+            className="reset-btn"
+            type="button"
+            onClick={onResetIdentity}
+            title="Créer une nouvelle identité"
+          >
+            Nouvelle identité
+          </button>
+        )}
       </div>
     </header>
   );

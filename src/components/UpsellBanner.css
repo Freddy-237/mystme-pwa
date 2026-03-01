@@ -1,44 +1,66 @@
 .upsell-banner {
   position: relative;
-  background: linear-gradient(135deg, #4c1d95, #7c3aed);
-  padding: 16px 40px 16px 16px;
+  background: #f5edff;
+  border-top: 1px solid #e2d3f9;
+  padding: 12px 14px 14px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  text-align: center;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .upsell-close {
   position: absolute;
   top: 8px;
-  right: 10px;
+  right: 8px;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 18px;
+  color: #8d79a8;
+  font-size: 16px;
   cursor: pointer;
 }
 
-.upsell-text {
+.upsell-title {
   margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #46246f;
+}
+
+.upsell-points {
+  margin: 0;
+  padding-left: 16px;
+  color: #6c5a82;
   font-size: 13px;
-  color: #e0e0e0;
-  line-height: 1.4;
+  line-height: 1.45;
+}
+
+.upsell-actions {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .upsell-cta {
-  background: #fff;
-  color: #4c1d95;
+  background: linear-gradient(110deg, #c83ee3, #7c1d92);
+  color: #fff;
   border: none;
-  border-radius: 20px;
-  padding: 8px 24px;
+  border-radius: 999px;
+  padding: 8px 16px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.15s;
+  text-decoration: none;
 }
 
-.upsell-cta:hover {
-  opacity: 0.9;
+.upsell-secondary {
+  border: 1px solid #d4c3ed;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6a3e95;
+  background: #fff;
+  text-decoration: none;
 }

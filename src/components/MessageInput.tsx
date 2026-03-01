@@ -6,9 +6,16 @@ type Props = {
   onChange: (v: string) => void;
   onSend: () => void;
   placeholder?: string;
+  reassuranceText?: string;
 };
 
-export default function MessageInput({ value, onChange, onSend, placeholder }: Props) {
+export default function MessageInput({
+  value,
+  onChange,
+  onSend,
+  placeholder,
+  reassuranceText,
+}: Props) {
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -17,18 +24,21 @@ export default function MessageInput({ value, onChange, onSend, placeholder }: P
   };
 
   return (
-    <div className="input-bar">
-      <textarea
-        className="input-field"
-        rows={1}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={handleKey}
-        placeholder={placeholder}
-      />
-      <button className="send-btn" onClick={onSend} disabled={!value.trim()}>
-        ▶
-      </button>
+    <div className="input-wrap">
+      <div className="input-bar">
+        <textarea
+          className="input-field"
+          rows={1}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKey}
+          placeholder={placeholder}
+        />
+        <button className="send-btn" onClick={onSend} disabled={!value.trim()}>
+          ▶
+        </button>
+      </div>
+      {reassuranceText && <p className="input-reassurance">{reassuranceText}</p>}
     </div>
   );
 }

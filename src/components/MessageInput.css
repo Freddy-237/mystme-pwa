@@ -1,10 +1,14 @@
+.input-wrap {
+  background: #ffffff;
+  border-top: 1px solid rgba(106, 10, 214, 0.1);
+}
+
 .input-bar {
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  padding: 10px 14px;
-  background: #ffffff;
-  border-top: 1px solid rgba(106, 10, 214, 0.1);
+  padding: 10px 14px 6px;
+  background: transparent;
 }
 
 .input-field {
@@ -50,4 +54,11 @@
 .send-btn:disabled {
   opacity: 0.35;
   cursor: default;
+}
+
+.input-reassurance {
+  margin: 0;
+  padding: 0 16px 10px;
+  font-size: 11px;
+  color: #82659f;
 }

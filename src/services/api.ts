@@ -33,6 +33,9 @@ export const identityApi = {
 
   /** Retrieve the current user from the stored JWT. */
   me: () => request<UserResponse>('/identity/me'),
+
+  /** Clear current auth session cookie. */
+  logout: () => request<{ ok: boolean }>('/identity/logout', { method: 'POST' }),
 };
 
 // ─── Link ───
