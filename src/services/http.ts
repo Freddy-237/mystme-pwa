@@ -1,4 +1,9 @@
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = (
+  import.meta.env.VITE_API_URL ||
+  'https://api-mystme-production.up.railway.app'
+)
+  .trim()
+  .replace(/\/+$/, '');
 const CSRF_COOKIE_NAME = 'mystme_csrf';
 const CSRF_HEADER_NAME = 'x-csrf-token';
 
