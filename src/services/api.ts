@@ -14,6 +14,11 @@ export interface UserResponse {
 export interface InitResponse {
   user: UserResponse;
   token: string;
+  csrfToken?: string;
+}
+
+export interface SessionTokenResponse {
+  token: string;
 }
 
 export interface LinkResponse {
@@ -29,10 +34,13 @@ export interface LinkResponse {
 
 export const identityApi = {
   /** Create a brand-new anonymous identity. */
-  init: () => request<InitResponse>('/identity/init', { method: 'POST' }),
+  init: () => request<InitResponse>('/identity/init', { method: 'POST', body: '{}' }),
 
   /** Retrieve the current user from the stored JWT. */
   me: () => request<UserResponse>('/identity/me'),
+
+  /** Issue a fresh bearer token for the current authenticated session. */
+  sessionToken: () => request<SessionTokenResponse>('/identity/session-token'),
 
   /** Clear current auth session cookie. */
   logout: () => request<{ ok: boolean }>('/identity/logout', { method: 'POST' }),

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { identityApi, UserResponse } from './api';
+import { getAuthToken, setAuthToken, setCsrfToken } from './http';
 
 export interface IdentityState {
   /** Current user (null while loading or if not yet init'd) */
@@ -23,22 +24,32 @@ export interface IdentityState {
  */
 export function useIdentity(): IdentityState {
   const [user, setUser] = useState<UserResponse | null>(null);
-  const [token] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(() => getAuthToken());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const bootstrap = useCallback(async () => {
     try {
-      try {
-        const me = await identityApi.me();
-        setUser(me);
-        return;
-      } catch {
-        // No valid auth cookie/session yet → init below.
+      const existingToken = getAuthToken();
+
+      if (existingToken) {
+        // We already have a stored Bearer token — validate it
+        try {
+          const me = await identityApi.me();
+          setUser(me);
+          setToken(existingToken);
+          return;
+        } catch {
+          // Token invalid/expired — clear and re-init below
+          setAuthToken(null);
+        }
       }
 
       // No valid session → create a new anonymous identity
-      const { user: newUser } = await identityApi.init();
+      const { user: newUser, token: newToken, csrfToken } = await identityApi.init();
+      setAuthToken(newToken);
+      if (csrfToken) setCsrfToken(csrfToken);
+      setToken(newToken);
       setUser(newUser);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
@@ -56,7 +67,13 @@ export function useIdentity(): IdentityState {
     setError(null);
     try {
       await identityApi.logout();
-      const { user: newUser } = await identityApi.init();
+      setAuthToken(null);
+      setCsrfToken(null);
+      setToken(null);
+      const { user: newUser, token: newToken, csrfToken } = await identityApi.init();
+      setAuthToken(newToken);
+      if (csrfToken) setCsrfToken(csrfToken);
+      setToken(newToken);
       setUser(newUser);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur inconnue');

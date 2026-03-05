@@ -1,3 +1,4 @@
+import { getStoreLink } from '../services/helpers';
 import './NoInvite.css';
 
 /**
@@ -5,10 +6,7 @@ import './NoInvite.css';
  * Redirects them to download the app.
  */
 export default function NoInvite() {
-  const storeLink =
-    /android/i.test(navigator.userAgent)
-      ? 'https://play.google.com/store/apps/details?id=com.mystme.app'
-      : 'https://apps.apple.com/app/mystme/id000000000';
+  const storeLink = getStoreLink();
 
   return (
     <div className="no-invite">

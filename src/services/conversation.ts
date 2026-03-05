@@ -1,5 +1,5 @@
 import { ApiMessage } from '../types';
-import { request } from './http';
+import { request, requestFormData } from './http';
 
 // Conversation representation from backend
 export interface ConversationDto {
@@ -28,4 +28,48 @@ export const conversationApi = {
       method: 'POST',
       body: JSON.stringify({ conversationId, content }),
     }),
+
+  sendImage: (
+    conversationId: string,
+    file: File,
+    onProgress?: (progress: number) => void,
+  ) => {
+    const data = new FormData();
+    data.append('conversationId', conversationId);
+    data.append('image', file);
+    return requestFormData<ApiMessage>('/message/image', data, 'POST', onProgress);
+  },
+
+  sendVideo: (
+    conversationId: string,
+    file: File,
+    onProgress?: (progress: number) => void,
+  ) => {
+    const data = new FormData();
+    data.append('conversationId', conversationId);
+    data.append('video', file);
+    return requestFormData<ApiMessage>('/message/video', data, 'POST', onProgress);
+  },
+
+  sendFile: (
+    conversationId: string,
+    file: File,
+    onProgress?: (progress: number) => void,
+  ) => {
+    const data = new FormData();
+    data.append('conversationId', conversationId);
+    data.append('file', file);
+    return requestFormData<ApiMessage>('/message/file', data, 'POST', onProgress);
+  },
+
+  sendAudio: (
+    conversationId: string,
+    file: Blob,
+    onProgress?: (progress: number) => void,
+  ) => {
+    const data = new FormData();
+    data.append('conversationId', conversationId);
+    data.append('audio', file, `audio_${Date.now()}.webm`);
+    return requestFormData<ApiMessage>('/message/audio', data, 'POST', onProgress);
+  },
 };

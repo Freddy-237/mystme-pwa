@@ -1,0 +1,12 @@
+{
+  "name": "MystMe",
+  "short_name": "MystMe",
+  "description": "MystMe chat anonyme",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f3ff",
+  "theme_color": "#7c1d92",
+  "icons": []
+}

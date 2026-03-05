@@ -3,8 +3,8 @@
 .landing {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  padding: 18px 20px 20px;
+  min-height: 100%;
+  padding: 10px 16px 14px;
   background: #f7f3ff;
   font-family: 'Manrope', system-ui, -apple-system, sans-serif;
   color: #1d143a;
@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 0 14px;
+  padding: 2px 0 8px;
 }
 
 .landing-logo {
@@ -26,7 +26,7 @@
 
 .landing-content {
   width: min(460px, 100%);
-  margin: auto 0 20px;
+  margin: 0 0 12px;
 }
 
 .landing-title {
@@ -91,6 +91,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: auto;
 }
 
 .landing-input {
@@ -179,7 +180,13 @@
   z-index: 5;
   background: #f1e8ff;
   border-bottom: 1px solid #e1d2f8;
-  padding: 8px 14px;
+  padding: 6px 12px;
+}
+
+@supports (padding: max(0px)) {
+  .anon-banner {
+    padding-top: max(6px, env(safe-area-inset-top, 0px));
+  }
 }
 
 .anon-banner-title {

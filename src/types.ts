@@ -5,6 +5,8 @@ export interface Message {
   text: string;
   sender: Sender;
   timestamp: number;
+  mediaUrl?: string;
+  mediaType?: 'image' | 'video' | 'file' | 'audio' | string;
 }
 
 // API shape returned by backend for messages
@@ -14,6 +16,8 @@ export interface ApiMessage {
   content: string;
   created_at: string;
   is_deleted?: boolean;
+  media_url?: string;
+  media_type?: 'image' | 'video' | 'file' | 'audio' | string;
 }
 
 /** Parsed from the shared URL */

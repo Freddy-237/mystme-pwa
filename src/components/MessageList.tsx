@@ -39,7 +39,19 @@ export default function MessageList({ messages, loading }: Props) {
       )}
       {messages.map((m) => (
         <div key={m.id} className={`bubble ${m.sender}`}>
-          <p>{m.text}</p>
+          {m.mediaType === 'image' && m.mediaUrl ? (
+            <img className="bubble-image" src={m.mediaUrl} alt="image" />
+          ) : m.mediaType === 'video' && m.mediaUrl ? (
+            <video className="bubble-video" src={m.mediaUrl} controls preload="metadata" />
+          ) : m.mediaType === 'audio' && m.mediaUrl ? (
+            <audio className="bubble-audio" src={m.mediaUrl} controls preload="metadata" />
+          ) : m.mediaType === 'file' && m.mediaUrl ? (
+            <a className="bubble-file" href={m.mediaUrl} target="_blank" rel="noreferrer">
+              📄 Ouvrir le fichier
+            </a>
+          ) : (
+            <p>{m.text}</p>
+          )}
           <span className="time">{formatTime(m.timestamp)}</span>
         </div>
       ))}

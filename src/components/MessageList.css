@@ -45,6 +45,25 @@
   white-space: pre-wrap;
 }
 
+.bubble-image,
+.bubble-video {
+  width: 100%;
+  max-width: 260px;
+  border-radius: 12px;
+  display: block;
+}
+
+.bubble-audio {
+  width: 220px;
+  max-width: 100%;
+}
+
+.bubble-file {
+  color: inherit;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
 .bubble .time {
   display: block;
   margin-top: 6px;
