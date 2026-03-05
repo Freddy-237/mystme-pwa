@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { conversationApi } from './conversation';
-import { pwaSocket } from './socket';
+import { conversationApi } from '../services/conversation';
+import { pwaSocket } from '../services/socket';
 import { ApiMessage, Message } from '../types';
 
 type PendingUpload =
