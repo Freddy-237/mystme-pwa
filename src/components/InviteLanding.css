@@ -34,6 +34,16 @@
   line-height: 1.2;
   font-weight: 700;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.landing-title-icon {
+  width: 24px;
+  height: 24px;
+  color: #7c1d92;
+  flex-shrink: 0;
 }
 
 .landing-subtitle {
@@ -69,6 +79,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.avatar-fallback-icon {
+  width: 26px;
+  height: 26px;
+  color: #f4e9ff;
 }
 
 .identity-content {
@@ -126,6 +142,16 @@
   font-size: 14px;
   font-weight: 700;
   color: #3a235d;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.landing-feedback-icon {
+  width: 15px;
+  height: 15px;
+  color: #7c1d92;
+  flex-shrink: 0;
 }
 
 .landing-feedback-sub {

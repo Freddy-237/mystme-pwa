@@ -1,5 +1,47 @@
 import MessageInput from '../MessageInput';
 
+function FooterIcon({ kind }: { kind: 'clock' | 'limit' }) {
+  if (kind === 'clock') {
+    return (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{ verticalAlign: 'text-bottom', marginRight: '6px' }}
+        aria-hidden
+      >
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v6l4 2" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ verticalAlign: 'text-bottom', marginRight: '6px' }}
+      aria-hidden
+    >
+      <path d="M6 8h12" />
+      <path d="M4 12h16" />
+      <path d="M8 16h8" />
+      <rect x="3" y="5" width="18" height="14" rx="3" />
+    </svg>
+  );
+}
+
 interface ChatFooterProps {
   expired: boolean;
   hardLimitReached: boolean;
@@ -24,7 +66,10 @@ export default function ChatFooter(props: ChatFooterProps) {
   if (props.expired) {
     return (
       <div style={{ padding: '1.5rem', textAlign: 'center', color: '#513768', background: '#fff' }}>
-        <p style={{ fontSize: '1rem', fontWeight: 600 }}>⏰ Cette conversation a expiré après 7 jours.</p>
+        <p style={{ fontSize: '1rem', fontWeight: 600 }}>
+          <FooterIcon kind="clock" />
+          Cette conversation a expiré après 7 jours.
+        </p>
         <p style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '0.5rem' }}>
           Pour la rallonger ou débloquer l'envoi, tu peux passer en premium dans l'app MystMe (optionnel).
         </p>
@@ -52,7 +97,10 @@ export default function ChatFooter(props: ChatFooterProps) {
   if (props.hardLimitReached) {
     return (
       <div style={{ padding: '1rem 1rem 1.25rem', textAlign: 'center', color: '#513768', background: '#fff', borderTop: '1px solid #efe6ff' }}>
-        <p style={{ fontSize: '1rem', fontWeight: 700 }}>⏳ Limite du chat web atteinte</p>
+        <p style={{ fontSize: '1rem', fontWeight: 700 }}>
+          <FooterIcon kind="limit" />
+          Limite du chat web atteinte
+        </p>
         <p style={{ fontSize: '0.85rem', opacity: 0.8, marginTop: '0.45rem' }}>
           Pour continuer cette conversation, ouvre MystMe dans l'application.
         </p>
@@ -108,7 +156,7 @@ export default function ChatFooter(props: ChatFooterProps) {
         uploading={props.uploading}
         isRecordingAudio={props.isRecordingAudio}
         placeholder="Répondre anonymement…"
-        reassuranceText="🔒 Ton identité ne sera jamais révélée"
+        reassuranceText="Ton identité ne sera jamais révélée"
       />
       <input
         ref={props.mediaInputRef}
