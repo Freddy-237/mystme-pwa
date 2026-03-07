@@ -36,7 +36,12 @@
   background: rgba(255, 255, 255, 0.15);
   display: grid;
   place-items: center;
-  font-size: 20px;
+}
+
+.avatar-icon {
+  width: 22px;
+  height: 22px;
+  color: #fff;
 }
 
 .title-group {
@@ -55,21 +60,12 @@
   font-weight: 600;
 }
 
+.countdown-icon {
+  width: 16px;
+  height: 16px;
+  color: #efe5ff;
+}
+
 .countdown-text {
   font-size: 16px;
-}
-
-.reset-btn {
-  border: none;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 8px 10px;
-  cursor: pointer;
-}
-
-.reset-btn:hover {
-  background: rgba(255, 255, 255, 0.28);
 }

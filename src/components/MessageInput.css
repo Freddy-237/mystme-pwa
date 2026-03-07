@@ -42,23 +42,9 @@
 .input-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 8px 10px 6px;
   background: transparent;
-}
-
-.icon-btn {
-  width: 36px;
-  height: 36px;
-  border: 1px solid rgba(106, 10, 214, 0.18);
-  border-radius: 50%;
-  background: #f6f0ff;
-  color: #6b21a8;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
 }
 
 .icon-svg {
@@ -69,17 +55,6 @@
 .send-svg {
   width: 16px;
   height: 16px;
-}
-
-.icon-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.icon-btn.audio-btn.recording {
-  border-color: rgba(220, 38, 38, 0.45);
-  color: #dc2626;
-  background: #fff1f2;
 }
 
 .input-field {
@@ -155,11 +130,10 @@
   }
 
   .input-bar {
-    gap: 5px;
+    gap: 7px;
     padding: 7px 8px 6px;
   }
 
-  .icon-btn,
   .send-btn {
     width: 34px;
     height: 34px;

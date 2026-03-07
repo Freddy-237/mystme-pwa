@@ -80,26 +80,6 @@ function App() {
     }
   };
 
-  const handleResetIdentity = async () => {
-    chat.setChatError(null);
-    chat.setChatLoading(true);
-    try {
-      await identity.signOut();
-      setConversationId(null);
-      chat.reset();
-      setLandingInput('');
-      setExpiresAt(null);
-      setNow(Date.now());
-      setFirstSendSuccess(false);
-      setSoftCtaDismissed(false);
-      setScreen(invite ? 'landing' : 'no-invite');
-    } catch (err) {
-      chat.setChatError(err instanceof Error ? err.message : 'Erreur');
-    } finally {
-      chat.setChatLoading(false);
-    }
-  };
-
   // --- Loading / bootstrap ---
   if (identity.loading || (screen === 'loading' && !identity.error)) {
     return (
@@ -151,11 +131,31 @@ function App() {
   // --- Chat screen (7-day window) ---
   return (
     <div className="app">
-      <Header name={invite.senderName ?? 'Anonyme'} countdownLabel={countdownLabel} onResetIdentity={handleResetIdentity} />
+      <Header name={invite.senderName ?? 'Anonyme'} countdownLabel={countdownLabel} />
 
       <div className="anon-banner">
         <div className="anon-banner-title">Tu es anonyme dans cette conversation</div>
-        <div className="anon-banner-subtitle">Pseudo : {identity.user?.pseudo ?? 'Ghost'}</div>
+        <div className="anon-banner-subtitle-row">
+          <div className="anon-mini-avatar" aria-hidden>
+            {identity.user?.avatar_url ? (
+              <img src={identity.user.avatar_url} alt="" className="anon-mini-avatar-image" />
+            ) : (
+              <svg
+                className="anon-mini-avatar-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20a8 8 0 0 1 16 0" />
+              </svg>
+            )}
+          </div>
+          <div className="anon-banner-subtitle">Pseudo : {identity.user?.pseudo ?? 'Ghost'}</div>
+        </div>
       </div>
 
       <div className="chat-body">
@@ -180,16 +180,11 @@ function App() {
         input={chat.input}
         onInputChange={chat.setInput}
         onSend={chat.handleSend}
-        onMediaClick={chat.handleOpenMediaPicker}
-        onAudioClick={chat.handleAudioClick}
         onRetryUpload={chat.handleRetryUpload}
         canRetryUpload={chat.pendingUpload !== null}
         uploadProgress={chat.uploadProgress}
         uploadLabel={chat.uploadLabel}
         uploading={chat.isUploadingMedia}
-        isRecordingAudio={chat.isRecordingAudio}
-        mediaInputRef={chat.mediaInputRef}
-        onMediaSelected={chat.handleMediaSelected}
       />
     </div>
   );

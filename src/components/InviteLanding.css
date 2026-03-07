@@ -226,3 +226,33 @@
   color: #6b5f78;
   font-size: 12px;
 }
+
+.anon-banner-subtitle-row {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.anon-mini-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #8f22a9, #c83ee3);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.anon-mini-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.anon-mini-avatar-icon {
+  width: 12px;
+  height: 12px;
+  color: #f7efff;
+}

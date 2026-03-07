@@ -50,16 +50,11 @@ interface ChatFooterProps {
   input: string;
   onInputChange: (v: string) => void;
   onSend: () => void;
-  onMediaClick: () => void;
-  onAudioClick: () => void;
   onRetryUpload: () => void;
   canRetryUpload: boolean;
   uploadProgress: number | null;
   uploadLabel: string | null;
   uploading: boolean;
-  isRecordingAudio: boolean;
-  mediaInputRef: React.RefObject<HTMLInputElement | null>;
-  onMediaSelected: (file: File | null) => void;
 }
 
 export default function ChatFooter(props: ChatFooterProps) {
@@ -147,27 +142,13 @@ export default function ChatFooter(props: ChatFooterProps) {
         value={props.input}
         onChange={props.onInputChange}
         onSend={props.onSend}
-        onMediaClick={props.onMediaClick}
-        onAudioClick={props.onAudioClick}
         onRetryUpload={props.onRetryUpload}
         canRetryUpload={props.canRetryUpload}
         uploadProgress={props.uploadProgress}
         uploadLabel={props.uploadLabel}
         uploading={props.uploading}
-        isRecordingAudio={props.isRecordingAudio}
         placeholder="Répondre anonymement…"
         reassuranceText="Ton identité ne sera jamais révélée"
-      />
-      <input
-        ref={props.mediaInputRef}
-        type="file"
-        accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt"
-        style={{ display: 'none' }}
-        onChange={(e) => {
-          const file = e.target.files?.[0] ?? null;
-          props.onMediaSelected(file);
-          e.currentTarget.value = '';
-        }}
       />
     </>
   );
