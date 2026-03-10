@@ -6,27 +6,48 @@ export interface ConversationDto {
   id: string;
   link_id: string;
   owner_id: string;
-  anonymous_id: string;
+  anonymous_id: string | null;
   status: 'active' | 'blocked' | 'archived';
   started_at: string;
+  expires_at?: string | null;
   blocked_at: string | null;
   created_at: string;
+  owner_pseudo?: string;
+  anonymous_pseudo?: string;
+}
+
+export interface ResolveLinkDto {
+  conversation: ConversationDto;
+  conversationId: string;
+  ownerId: string;
+  targetPseudo: string;
+  anonymousPseudo: string;
 }
 
 export const conversationApi = {
-  start: (inviteCode: string) =>
-    request<ConversationDto>('/conversation/start', {
+  resolveInvite: (inviteCode: string) =>
+    request<ResolveLinkDto>('/conversation/resolve-link', {
       method: 'POST',
       body: JSON.stringify({ inviteCode }),
     }),
 
+  start: (inviteCode: string) =>
+    request<ResolveLinkDto>('/conversation/resolve-link', {
+      method: 'POST',
+      body: JSON.stringify({ inviteCode }),
+    }).then((res) => res.conversation),
+
   getMessages: (conversationId: string) =>
     request<ApiMessage[]>(`/message/${conversationId}`),
 
-  sendMessage: (conversationId: string, content: string) =>
+  sendMessage: (
+    conversationId: string,
+    content: string,
+    replyToMessageId?: string,
+  ) =>
     request<ApiMessage>('/message', {
       method: 'POST',
-      body: JSON.stringify({ conversationId, content }),
+      body: JSON.stringify({ conversationId, content, replyToMessageId }),
     }),
 
   sendImage: (

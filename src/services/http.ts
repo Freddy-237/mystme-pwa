@@ -19,26 +19,23 @@ export function setCsrfToken(token: string | null) {
   csrfTokenMemory = token;
 }
 
-function safeStorage(kind: 'session' | 'local') {
-  try { return kind === 'session' ? window.sessionStorage : window.localStorage; } catch { return null; }
+function sessionStorageSafe() {
+  try { return window.sessionStorage; } catch { return null; }
 }
 
 function readStoredToken(): string | null {
   if (authTokenMemory) return authTokenMemory;
-  authTokenMemory =
-    safeStorage('session')?.getItem(AUTH_STORAGE_KEY) ??
-    safeStorage('local')?.getItem(AUTH_STORAGE_KEY) ??
-    null;
+  authTokenMemory = sessionStorageSafe()?.getItem(AUTH_STORAGE_KEY) ?? null;
   return authTokenMemory;
 }
 
 export function setAuthToken(token: string | null) {
   authTokenMemory = token;
-  for (const kind of ['session', 'local'] as const) {
-    const s = safeStorage(kind);
-    if (!s) continue;
-    token == null ? s.removeItem(AUTH_STORAGE_KEY) : s.setItem(AUTH_STORAGE_KEY, token);
-  }
+  const storage = sessionStorageSafe();
+  if (!storage) return;
+  token == null
+    ? storage.removeItem(AUTH_STORAGE_KEY)
+    : storage.setItem(AUTH_STORAGE_KEY, token);
 }
 
 export function getAuthToken(): string | null {
@@ -56,6 +53,37 @@ const isSafe = (m?: string) => /^(GET|HEAD|OPTIONS)$/i.test(m || 'GET');
 /* ── Axios instance ── */
 
 const api = axios.create({ baseURL: API_BASE, withCredentials: true });
+
+async function issueSessionToken(): Promise<string | null> {
+  try {
+    const { data } = await axios.get<{ token?: string }>(`${API_BASE}/identity/session-token`, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return typeof data?.token === 'string' && data.token ? data.token : null;
+  } catch {
+    return null;
+  }
+}
+
+async function initAnonymousIdentity(): Promise<{ token: string | null; csrfToken: string | null }> {
+  try {
+    const { data } = await axios.post<{ token?: string; csrfToken?: string }>(
+      `${API_BASE}/identity/init`,
+      {},
+      {
+        withCredentials: true,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    return {
+      token: typeof data?.token === 'string' ? data.token : null,
+      csrfToken: typeof data?.csrfToken === 'string' ? data.csrfToken : null,
+    };
+  } catch {
+    return { token: null, csrfToken: null };
+  }
+}
 
 // Request interceptor — inject auth + CSRF
 api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
@@ -91,17 +119,20 @@ api.interceptors.response.use(undefined, async (error: AxiosError<{ message?: st
     && !(original as { _authRetried?: boolean })._authRetried) {
     (original as { _authRetried?: boolean })._authRetried = true;
     setAuthToken(null);
-    try {
-      const { data } = await api.post<{ token?: string; csrfToken?: string }>(
-        '/identity/init', {}, { headers: { 'Content-Type': 'application/json' } },
-      );
-      if (data.token) {
-        setAuthToken(data.token);
-        original.headers.Authorization = `Bearer ${data.token}`;
-        if (data.csrfToken) csrfTokenMemory = data.csrfToken;
-        return api(original);
-      }
-    } catch { /* re-init failed */ }
+    const sessionToken = await issueSessionToken();
+    if (sessionToken) {
+      setAuthToken(sessionToken);
+      original.headers.Authorization = `Bearer ${sessionToken}`;
+      return api(original);
+    }
+
+    const initData = await initAnonymousIdentity();
+    if (initData.token) {
+      setAuthToken(initData.token);
+      original.headers.Authorization = `Bearer ${initData.token}`;
+      if (initData.csrfToken) csrfTokenMemory = initData.csrfToken;
+      return api(original);
+    }
   }
 
   const msg = error.response?.data?.message || `HTTP ${error.response?.status ?? 0}`;

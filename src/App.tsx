@@ -10,10 +10,20 @@ import Header from './components/Header';
 import MessageList from './components/MessageList';
 import UpsellBanner from './components/UpsellBanner';
 import ChatFooter from './components/ChatFooter';
+import ModerationConsole from './components/ModerationConsole';
+import type { ResolveLinkDto } from './services/conversation';
 
 type Screen = 'loading' | 'no-invite' | 'landing' | 'chat';
 
 function App() {
+  if (window.location.pathname.startsWith('/moderation')) {
+    return <ModerationConsole />;
+  }
+
+  return <InviteApp />;
+}
+
+function InviteApp() {
   const invite = useMemo(() => parseInvite(), []);
   const identity = useIdentity();
 
@@ -23,6 +33,7 @@ function App() {
   const [firstSendSuccess, setFirstSendSuccess] = useState(false);
   const [softCtaDismissed, setSoftCtaDismissed] = useState(false);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
+  const [resolvedContext, setResolvedContext] = useState<ResolveLinkDto | null>(null);
   const [now, setNow] = useState(Date.now());
 
   const chat = useChat({
@@ -52,8 +63,10 @@ function App() {
   const countdownLabel = remainingMs !== null ? formatCountdown(remainingMs) : '';
   const softCtaVisible = !expired && !chat.hardLimitReached && !softCtaDismissed && (chat.selfMessageCount >= 3 || chat.hasPeerReply);
   const storeLink = getStoreLink();
+  const targetDisplayName = resolvedContext?.targetPseudo ?? invite?.senderName ?? 'mystme';
+  const anonymousDisplayName = resolvedContext?.anonymousPseudo ?? identity.user?.pseudo ?? 'Ghost_92';
   const appDeepLink = conversationId
-    ? `mystme://chat/${conversationId}?source=pwa&pseudo=${encodeURIComponent(identity.user?.pseudo ?? 'Ghost_92')}&target=${encodeURIComponent(invite?.senderName ?? 'mystme')}`
+    ? `mystme://chat/${conversationId}?source=pwa&pseudo=${encodeURIComponent(anonymousDisplayName)}&target=${encodeURIComponent(targetDisplayName)}`
     : 'mystme://home';
 
   // -- handlers --
@@ -65,11 +78,16 @@ function App() {
     try {
       chat.setChatError(null);
       chat.setChatLoading(true);
-      const conv = await conversationApi.start(invite.inviteCode);
-      setConversationId(conv.id);
-      setExpiresAt(new Date(conv.started_at).getTime() + 7 * 24 * 60 * 60 * 1000);
-      await conversationApi.sendMessage(conv.id, firstMessage);
-      await chat.loadMessages(conv.id);
+      const resolved = await conversationApi.resolveInvite(invite.inviteCode);
+      setResolvedContext(resolved);
+      setConversationId(resolved.conversationId);
+      setExpiresAt(
+        resolved.conversation.expires_at
+          ? new Date(resolved.conversation.expires_at).getTime()
+          : null,
+      );
+      await conversationApi.sendMessage(resolved.conversationId, firstMessage);
+      await chat.loadMessages(resolved.conversationId);
       setLandingInput('');
       setFirstSendSuccess(true);
       setTimeout(() => { setScreen('chat'); setFirstSendSuccess(false); }, 1200);
@@ -114,8 +132,8 @@ function App() {
     return (
       <div className="app">
         <InviteLanding
-          senderName={invite.senderName}
-          anonymousPseudo={identity.user?.pseudo}
+          senderName={targetDisplayName}
+          anonymousPseudo={anonymousDisplayName}
           anonymousAvatarUrl={identity.user?.avatar_url}
           value={landingInput}
           onChange={setLandingInput}
@@ -131,7 +149,7 @@ function App() {
   // --- Chat screen (7-day window) ---
   return (
     <div className="app">
-      <Header name={invite.senderName ?? 'Anonyme'} countdownLabel={countdownLabel} />
+      <Header name={targetDisplayName} countdownLabel={countdownLabel} />
 
       <div className="anon-banner">
         <div className="anon-banner-title">Tu es anonyme dans cette conversation</div>
@@ -154,7 +172,7 @@ function App() {
               </svg>
             )}
           </div>
-          <div className="anon-banner-subtitle">Pseudo : {identity.user?.pseudo ?? 'Ghost'}</div>
+          <div className="anon-banner-subtitle">Pseudo : {anonymousDisplayName}</div>
         </div>
       </div>
 
@@ -167,7 +185,13 @@ function App() {
         {chat.chatError && (
           <div style={{ color: '#f87171', fontSize: '0.8rem', padding: '0.5rem 1rem' }}>{chat.chatError}</div>
         )}
-        <MessageList messages={chat.messages} loading={chat.chatLoading} selfId={identity.user?.id ?? ''} />
+        <MessageList
+          messages={chat.messages}
+          loading={chat.chatLoading}
+          selfId={identity.user?.id ?? ''}
+          activeReplyId={chat.replyTo?.id ?? null}
+          onReplySelect={chat.setReplyTo}
+        />
       </div>
 
       <UpsellBanner visible={softCtaVisible} deepLink={appDeepLink} installLink={storeLink} onDismiss={() => setSoftCtaDismissed(true)} />
@@ -185,6 +209,8 @@ function App() {
         uploadProgress={chat.uploadProgress}
         uploadLabel={chat.uploadLabel}
         uploading={chat.isUploadingMedia}
+        replyTo={chat.replyTo}
+        onClearReply={chat.clearReplyTo}
       />
     </div>
   );

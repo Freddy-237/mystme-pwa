@@ -1,3 +1,4 @@
+import { Message } from '../../types';
 import MessageInput from '../MessageInput';
 
 function FooterIcon({ kind }: { kind: 'clock' | 'limit' }) {
@@ -55,6 +56,16 @@ interface ChatFooterProps {
   uploadProgress: number | null;
   uploadLabel: string | null;
   uploading: boolean;
+  replyTo: Message | null;
+  onClearReply: () => void;
+}
+
+function replySummary(message: Message): string {
+  if (message.mediaType === 'image') return 'Image';
+  if (message.mediaType === 'video') return 'Vidéo';
+  if (message.mediaType === 'audio') return 'Audio';
+  if (message.mediaType === 'file') return 'Fichier';
+  return message.text || 'Message';
 }
 
 export default function ChatFooter(props: ChatFooterProps) {
@@ -138,6 +149,27 @@ export default function ChatFooter(props: ChatFooterProps) {
 
   return (
     <>
+      {props.replyTo && (
+        <div style={{ padding: '0.7rem 1rem 0.25rem', background: '#fff', borderTop: '1px solid #efe6ff' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem', padding: '0.7rem 0.9rem', borderRadius: '16px', background: 'linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%)', borderLeft: '4px solid #7c1d92' }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#6b21a8', marginBottom: '0.15rem' }}>
+                Réponse à {props.replyTo.sender === 'self' ? 'toi' : 'ce message'}
+              </div>
+              <div style={{ fontSize: '0.84rem', color: '#4c1d95', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {replySummary(props.replyTo)}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={props.onClearReply}
+              style={{ border: 'none', background: 'transparent', color: '#7c1d92', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+            >
+              Annuler
+            </button>
+          </div>
+        </div>
+      )}
       <MessageInput
         value={props.input}
         onChange={props.onInputChange}

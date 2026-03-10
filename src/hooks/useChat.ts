@@ -17,6 +17,7 @@ interface UseChatOptions {
 
 export function useChat({ conversationId, selfId, active }: UseChatOptions) {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [chatLoading, setChatLoading] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
   const [input, setInput] = useState('');
@@ -39,6 +40,14 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
       timestamp: new Date(msg.created_at).getTime(),
       mediaUrl: msg.media_url,
       mediaType: msg.media_type,
+      replyToMessageId: msg.reply_to_message_id,
+      replyToContent: msg.reply_to_content,
+      replyToSender:
+        msg.reply_to_sender_id == null
+          ? undefined
+          : msg.reply_to_sender_id === sid
+            ? 'self'
+            : 'peer',
     }),
     [],
   );
@@ -99,10 +108,16 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
     const text = input.trim();
     setInput('');
     try {
-      const msg = await conversationApi.sendMessage(conversationId, text);
+      const msg = await conversationApi.sendMessage(
+        conversationId,
+        text,
+        replyTo?.id,
+      );
       appendMessage(msg);
+      setReplyTo(null);
     } catch (err) {
       setChatError(err instanceof Error ? err.message : 'Erreur envoi');
+      setInput(text);
     }
   };
 
@@ -225,6 +240,7 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
 
   const reset = () => {
     setMessages([]);
+    setReplyTo(null);
     setInput('');
     setChatError(null);
     setChatLoading(false);
@@ -236,6 +252,9 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
   return {
     messages,
     setMessages,
+    replyTo,
+    setReplyTo,
+    clearReplyTo: () => setReplyTo(null),
     chatLoading,
     setChatLoading,
     chatError,

@@ -19,8 +19,9 @@ export interface IdentityState {
 
 /**
  * Hook that manages the anonymous identity lifecycle:
- * 1. Try /identity/me using HttpOnly cookie credentials
- * 2. If not authenticated, call /identity/init to create a new user session
+ * 1. Try /identity/me using cookie or bearer credentials
+ * 2. If a cookie-backed session exists but no bearer is cached, issue one
+ * 3. Otherwise create a new anonymous identity
  */
 export function useIdentity(): IdentityState {
   const [user, setUser] = useState<UserResponse | null>(null);
@@ -32,17 +33,23 @@ export function useIdentity(): IdentityState {
     try {
       const existingToken = getAuthToken();
 
-      if (existingToken) {
-        // We already have a stored Bearer token — validate it
-        try {
-          const me = await identityApi.me();
-          setUser(me);
+      try {
+        const me = await identityApi.me();
+        setUser(me);
+
+        if (existingToken) {
           setToken(existingToken);
           return;
-        } catch {
-          // Token invalid/expired — clear and re-init below
-          setAuthToken(null);
         }
+
+        const session = await identityApi.sessionToken();
+        if (session.token) {
+          setAuthToken(session.token);
+          setToken(session.token);
+        }
+        return;
+      } catch {
+        setAuthToken(null);
       }
 
       // No valid session → create a new anonymous identity
