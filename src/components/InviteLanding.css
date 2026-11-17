@@ -256,3 +256,22 @@
   height: 12px;
   color: #f7efff;
 }
+
+.landing-locked-title {
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 0.4rem;
+}
+
+.landing-locked-sub {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  text-align: center;
+  margin: 0 0 0.9rem;
+}
+
+a.landing-cta {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}

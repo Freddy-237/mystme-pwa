@@ -1,0 +1,46 @@
+.transfer-code {
+  margin: 0.75rem auto 0;
+  max-width: 340px;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  background: #f7f3ff;
+  border: 1px dashed #c9b3ef;
+  color: #513768;
+  text-align: center;
+}
+
+.transfer-code-label {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.transfer-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+}
+
+.transfer-code-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.transfer-code-copy {
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  background: #7c1d92;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.transfer-code-hint {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  opacity: 0.65;
+}

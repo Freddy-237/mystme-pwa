@@ -1,16 +1,19 @@
 import './UpsellBanner.css';
+import { copyTransferCode } from '../services/helpers';
 
 type Props = {
   visible: boolean;
   deepLink: string;
   installLink: string;
   onDismiss?: () => void;
+  transferCode?: string | null;
 };
 
-export default function UpsellBanner({ visible, deepLink, installLink, onDismiss }: Props) {
+export default function UpsellBanner({ visible, deepLink, installLink, onDismiss, transferCode }: Props) {
   if (!visible) return null;
 
   const handleOpen = () => {
+    void copyTransferCode(transferCode);
     const timeout = setTimeout(() => {
       window.location.href = installLink;
     }, 1500);
@@ -41,7 +44,13 @@ export default function UpsellBanner({ visible, deepLink, installLink, onDismiss
         <button className="upsell-cta" onClick={handleOpen}>
           Ouvrir dans l'app
         </button>
-        <a className="upsell-secondary" href={installLink} target="_blank" rel="noopener noreferrer">
+        <a
+          className="upsell-secondary"
+          href={installLink}
+          onClick={() => { void copyTransferCode(transferCode); }}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Installer l'app
         </a>
       </div>

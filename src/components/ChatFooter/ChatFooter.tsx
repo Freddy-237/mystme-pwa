@@ -1,5 +1,7 @@
 import { Message } from '../../types';
 import MessageInput from '../MessageInput';
+import TransferCode from '../TransferCode';
+import { copyTransferCode } from '../../services/helpers';
 
 function FooterIcon({ kind }: { kind: 'clock' | 'limit' }) {
   if (kind === 'clock') {
@@ -58,6 +60,8 @@ interface ChatFooterProps {
   uploading: boolean;
   replyTo: Message | null;
   onClearReply: () => void;
+  /** One-time code to recover this conversation in the app. */
+  transferCode?: string | null;
 }
 
 function replySummary(message: Message): string {
@@ -74,13 +78,15 @@ export default function ChatFooter(props: ChatFooterProps) {
       <div style={{ padding: '1.5rem', textAlign: 'center', color: '#513768', background: '#fff' }}>
         <p style={{ fontSize: '1rem', fontWeight: 600 }}>
           <FooterIcon kind="clock" />
-          Cette conversation a expiré après 7 jours.
+          Ta période de chat web (7 jours) est terminée.
         </p>
         <p style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '0.5rem' }}>
-          Pour la rallonger ou débloquer l'envoi, tu peux passer en premium dans l'app MystMe (optionnel).
+          Tu peux encore lire tes messages ici. Pour continuer à discuter, télécharge l'app MystMe.
         </p>
+        <TransferCode code={props.transferCode ?? null} />
         <a
           href={props.storeLink}
+          onClick={() => { void copyTransferCode(props.transferCode); }}
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -94,7 +100,7 @@ export default function ChatFooter(props: ChatFooterProps) {
             textDecoration: 'none',
           }}
         >
-          Télécharger l'app MystMe (optionnel)
+          Télécharger l'app MystMe
         </a>
       </div>
     );
@@ -110,6 +116,7 @@ export default function ChatFooter(props: ChatFooterProps) {
         <p style={{ fontSize: '0.85rem', opacity: 0.8, marginTop: '0.45rem' }}>
           Pour continuer cette conversation, ouvre MystMe dans l'application.
         </p>
+        <TransferCode code={props.transferCode ?? null} />
         <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', marginTop: '0.8rem', flexWrap: 'wrap' }}>
           <a
             href={props.appDeepLink}
@@ -127,6 +134,7 @@ export default function ChatFooter(props: ChatFooterProps) {
           </a>
           <a
             href={props.storeLink}
+            onClick={() => { void copyTransferCode(props.transferCode); }}
             target="_blank"
             rel="noopener noreferrer"
             style={{
