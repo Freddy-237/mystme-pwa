@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.mystme.app",
+      "sha256_cert_fingerprints": [
+        "D2:42:FA:50:7B:31:29:72:9C:D0:CC:7E:D1:0F:7F:96:0C:AE:A7:DA:55:55:E0:B3:25:E1:F5:83:12:AD:2A:9D"
+      ]
+    }
+  }
+]
