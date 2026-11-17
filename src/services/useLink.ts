@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { linkApi, LinkResponse } from './api';
+import { toFriendlyErrorMessage } from './errors';
 
 export interface LinkState {
   /** The user's link (null while loading or if none created yet) */
@@ -37,7 +38,7 @@ export function useLink(ready: boolean): LinkState {
       })
       .catch((err) => {
         if (!mounted) return;
-        setError(err.message);
+        setError(toFriendlyErrorMessage(err, 'Impossible de charger ton lien pour le moment.'));
       })
       .finally(() => {
         if (mounted) setLoading(false);
@@ -53,17 +54,18 @@ export function useLink(ready: boolean): LinkState {
       const newLink = await linkApi.create();
       setLink(newLink);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
+      setError(toFriendlyErrorMessage(err, 'Impossible de creer ton lien maintenant.'));
     }
   }, []);
 
   const deactivateLink = useCallback(async () => {
     if (!link) return;
     try {
+      setError(null);
       await linkApi.deactivate(link.id);
       setLink(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
+      setError(toFriendlyErrorMessage(err, 'Impossible de desactiver ce lien maintenant.'));
     }
   }, [link]);
 

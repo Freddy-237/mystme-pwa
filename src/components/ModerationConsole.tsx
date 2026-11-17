@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { moderationApi, type ModerationReport, type ReviewModerationReportPayload } from '../services/api';
+import { toFriendlyErrorMessage } from '../services/errors';
 import './ModerationConsole.css';
 
 type ReportStatus = 'pending' | 'reviewed' | 'dismissed';
@@ -32,10 +33,10 @@ function shrinkId(value?: string | null) {
 
 function resolveTargetLabel(report: ModerationReport) {
   if (report.reported_message_sender_id === report.owner_id) {
-    return report.owner_pseudo || 'Owner';
+    return report.owner_pseudo || 'Proprietaire';
   }
   if (report.reported_message_sender_id === report.anonymous_id) {
-    return report.anonymous_pseudo || 'Anonymous';
+    return report.anonymous_pseudo || 'Anonyme';
   }
   return report.reported_message_sender_id ? shrinkId(report.reported_message_sender_id) : 'Conversation';
 }
@@ -60,11 +61,13 @@ export default function ModerationConsole() {
 
   const selectedReport = reports.find((report) => report.id === selectedReportId) ?? reports[0] ?? null;
 
-  const loadReports = async (nextStatus = status) => {
+  const loadReports = async (nextStatus = status, options?: { clearSuccess?: boolean }) => {
     if (!apiKey.trim() || !actor.trim()) return;
     setLoading(true);
     setError(null);
-    setSuccess(null);
+    if (options?.clearSuccess !== false) {
+      setSuccess(null);
+    }
     try {
       const nextReports = await moderationApi.listReports(apiKey.trim(), actor.trim(), nextStatus);
       setReports(nextReports);
@@ -77,7 +80,7 @@ export default function ModerationConsole() {
     } catch (err) {
       setReports([]);
       setSelectedReportId(null);
-      setError(err instanceof Error ? err.message : 'Chargement impossible');
+      setError(toFriendlyErrorMessage(err, 'Impossible de charger les signalements maintenant.'));
     } finally {
       setLoading(false);
     }
@@ -128,9 +131,9 @@ export default function ModerationConsole() {
     try {
       await moderationApi.reviewReport(apiKey.trim(), actor.trim(), selectedReport.id, payload);
       setSuccess(`Signalement ${decision === 'dismissed' ? 'classé' : 'traité'} avec succès.`);
-      await loadReports(status);
+      await loadReports(status, { clearSuccess: false });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Review impossible');
+      setError(toFriendlyErrorMessage(err, 'Impossible d appliquer la decision pour le moment.'));
     } finally {
       setSubmitting(false);
     }
@@ -223,6 +226,7 @@ export default function ModerationConsole() {
                   <p>
                     Cible: {resolveTargetLabel(report)}
                   </p>
+                  {report.auto_flagged && <p>Priorité élevée</p>}
                 </button>
               ))
             )}
@@ -242,10 +246,10 @@ export default function ModerationConsole() {
                   <span className="detail-label">Conversation</span>
                   <strong>{shrinkId(selectedReport.conversation_id)}</strong>
                   <p>
-                    Owner: {selectedReport.owner_pseudo || shrinkId(selectedReport.owner_id)}
+                    Proprietaire: {selectedReport.owner_pseudo || shrinkId(selectedReport.owner_id)}
                   </p>
                   <p>
-                    Anonymous: {selectedReport.anonymous_pseudo || shrinkId(selectedReport.anonymous_id)}
+                    Anonyme: {selectedReport.anonymous_pseudo || shrinkId(selectedReport.anonymous_id)}
                   </p>
                 </div>
                 <div className="moderation-detail-card">
@@ -254,6 +258,13 @@ export default function ModerationConsole() {
                   <p>{selectedReport.reported_message_content || 'Signalement au niveau conversation.'}</p>
                   <p>{formatDate(selectedReport.reported_message_created_at)}</p>
                 </div>
+                {selectedReport.auto_flagged && (
+                  <div className="moderation-detail-card">
+                    <span className="detail-label">Signal agrégé</span>
+                    <strong>Seuil automatique atteint</strong>
+                    <p>Ce compte a reçu assez de signalements uniques pour être priorisé en modération.</p>
+                  </div>
+                )}
               </div>
 
               <div className="moderation-form-card">
@@ -283,7 +294,7 @@ export default function ModerationConsole() {
                 {banUser && decision === 'reviewed' && (
                   <div className="moderation-field">
                     <label htmlFor="banReason">Motif de ban</label>
-                    <input id="banReason" value={banReason} onChange={(event) => setBanReason(event.target.value)} placeholder="Abusive behavior" />
+                    <input id="banReason" value={banReason} onChange={(event) => setBanReason(event.target.value)} placeholder="Comportement abusif" />
                   </div>
                 )}
 

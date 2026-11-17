@@ -9,6 +9,16 @@ export interface UserResponse {
   avatar_url: string;
   last_seen_at: string;
   created_at: string;
+  system_warning_message?: string | null;
+  system_warning_code?: string | null;
+  /** 'web' for PWA identities (7-day write window), 'app' otherwise. */
+  origin?: 'web' | 'app';
+  /** End of the web write window (ISO), null for app identities. */
+  web_expires_at?: string | null;
+  /** True once the web window is over: read-only, install the app. */
+  web_locked?: boolean;
+  /** When a locked web identity becomes eligible for deletion (ISO). */
+  web_purge_at?: string | null;
 }
 
 export interface InitResponse {
@@ -35,8 +45,10 @@ export interface ModerationReport {
   conversation_id: string;
   message_id: string | null;
   reported_by: string;
+  reported_user_id?: string | null;
   reporter_pseudo?: string | null;
   reason: string;
+  already_reported?: boolean;
   status: 'pending' | 'reviewed' | 'dismissed';
   created_at: string;
   reviewed_at?: string | null;
@@ -49,6 +61,10 @@ export interface ModerationReport {
   reported_message_sender_id?: string | null;
   reported_message_content?: string | null;
   reported_message_created_at?: string | null;
+  total_report_count?: number;
+  unique_reporter_count?: number;
+  auto_flag_threshold?: number;
+  auto_flagged?: boolean;
 }
 
 export interface ReviewModerationReportPayload {
@@ -64,7 +80,11 @@ export interface ReviewModerationReportPayload {
 
 export const identityApi = {
   /** Create a brand-new anonymous identity. */
-  init: () => request<InitResponse>('/identity/init', { method: 'POST', body: '{}' }),
+  init: () => request<InitResponse>('/identity/init', {
+    method: 'POST',
+    // Tells the backend this is a web identity (7-day window, message cap).
+    body: JSON.stringify({ client: 'web' }),
+  }),
 
   /** Retrieve the current user from the stored JWT. */
   me: () => request<UserResponse>('/identity/me'),
@@ -74,6 +94,18 @@ export const identityApi = {
 
   /** Clear current auth session cookie. */
   logout: () => request<{ ok: boolean }>('/identity/logout', { method: 'POST' }),
+};
+
+// ─── PWA → app transfer ───
+
+export interface TransferCodeResponse {
+  /** Short one-time code, e.g. "ABCD-2345" (valid 30 min). */
+  code: string;
+  expiresAt: string;
+}
+
+export const transferApi = {
+  create: () => request<TransferCodeResponse>('/identity/transfer-token', { method: 'POST', body: '{}' }),
 };
 
 // ─── Link ───

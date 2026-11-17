@@ -8,8 +8,8 @@ export interface ConversationDto {
   owner_id: string;
   anonymous_id: string | null;
   status: 'active' | 'blocked' | 'archived';
-  started_at: string;
-  expires_at?: string | null;
+  /** Null until the first message is sent. */
+  started_at: string | null;
   blocked_at: string | null;
   created_at: string;
   owner_pseudo?: string;
@@ -90,7 +90,14 @@ export const conversationApi = {
   ) => {
     const data = new FormData();
     data.append('conversationId', conversationId);
-    data.append('audio', file, `audio_${Date.now()}.webm`);
+    const mimeType = file.type.split(';', 1)[0].toLowerCase();
+    const extension =
+      mimeType === 'audio/mp4'
+        ? 'm4a'
+        : mimeType.startsWith('audio/')
+          ? mimeType.slice('audio/'.length).replace(/^x-/, '')
+          : 'audio';
+    data.append('audio', file, `audio_${Date.now()}.${extension}`);
     return requestFormData<ApiMessage>('/message/audio', data, 'POST', onProgress);
   },
 };

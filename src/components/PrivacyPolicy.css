@@ -1,0 +1,40 @@
+.privacy-page {
+  min-height: 100%;
+  background: #fff;
+}
+
+.privacy {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+  color: #1f1730;
+  line-height: 1.6;
+}
+
+.privacy-title {
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.privacy-app {
+  margin: 0.25rem 0 1.5rem;
+  color: #7c1d92;
+  font-weight: 700;
+}
+
+.privacy-section h2 {
+  font-size: 1.05rem;
+  margin: 1.5rem 0 0.4rem;
+}
+
+.privacy-section p {
+  margin: 0;
+  white-space: pre-line;
+  color: #4b4460;
+}
+
+.privacy-updated {
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  color: #7a7390;
+}

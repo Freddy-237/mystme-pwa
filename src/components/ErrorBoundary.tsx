@@ -1,4 +1,5 @@
 import React from 'react';
+import { toFriendlyErrorMessage } from '../services/errors';
 
 interface Props {
   children: React.ReactNode;
@@ -34,7 +35,9 @@ export default class ErrorBoundary extends React.Component<Props, State> {
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f7f3ff', padding: '2rem', textAlign: 'center' }}>
           <div>
             <h2 style={{ color: '#7c1d92', marginBottom: '0.5rem' }}>Oups, quelque chose a planté</h2>
-            <p style={{ fontSize: '0.85rem', color: '#666' }}>{this.state.error?.message}</p>
+            <p style={{ fontSize: '0.92rem', color: '#666', maxWidth: '26rem' }}>
+              {toFriendlyErrorMessage(this.state.error, 'Une erreur inattendue est survenue. Recharge la page pour continuer.')}
+            </p>
             <button
               type="button"
               onClick={() => window.location.reload()}

@@ -1,4 +1,6 @@
 import './InviteLanding.css';
+import TransferCode from './TransferCode';
+import { copyTransferCode } from '../services/helpers';
 
 function LandingIcon({ kind, className }: { kind: 'ghost' | 'check'; className?: string }) {
   if (kind === 'check') {
@@ -48,6 +50,10 @@ type Props = {
   sent?: boolean;
   loading?: boolean;
   error?: string | null;
+  /** Web window over: no more writing, invite to install the app. */
+  locked?: boolean;
+  storeLink?: string;
+  transferCode?: string | null;
 };
 
 export default function InviteLanding({
@@ -60,6 +66,9 @@ export default function InviteLanding({
   sent,
   loading,
   error,
+  locked = false,
+  storeLink,
+  transferCode = null,
 }: Props) {
   const targetName = senderName ?? 'mystme';
 
@@ -91,6 +100,26 @@ export default function InviteLanding({
         </div>
       </main>
 
+      {locked ? (
+        <section className="landing-action" aria-live="polite">
+          <p className="landing-locked-title">Ta période de chat web (7 jours) est terminée.</p>
+          <p className="landing-locked-sub">
+            Télécharge l&apos;app MystMe pour continuer à écrire à @{targetName}.
+          </p>
+          <TransferCode code={transferCode} />
+          {storeLink && (
+            <a
+              className="landing-cta"
+              href={storeLink}
+              onClick={() => { void copyTransferCode(transferCode); }}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Télécharger l&apos;app MystMe
+            </a>
+          )}
+        </section>
+      ) : (
       <section className="landing-action">
         <textarea
           className="landing-input"
@@ -117,6 +146,7 @@ export default function InviteLanding({
           {loading ? 'Envoi…' : 'Envoyer anonymement'}
         </button>
       </section>
+      )}
     </div>
   );
 }

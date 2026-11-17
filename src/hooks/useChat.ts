@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { conversationApi } from '../services/conversation';
+import { getErrorCode, toFriendlyErrorMessage } from '../services/errors';
 import { pwaSocket } from '../services/socket';
 import { ApiMessage, Message } from '../types';
 
@@ -8,6 +9,20 @@ type PendingUpload =
   | { kind: 'audio'; blob: Blob };
 
 export const WEB_MESSAGE_LIMIT = 6;
+
+const AUDIO_MIME_TYPES = [
+  'audio/webm;codecs=opus',
+  'audio/webm',
+  'audio/mp4;codecs=mp4a.40.2',
+  'audio/mp4',
+  'audio/ogg;codecs=opus',
+];
+
+export function selectAudioMimeType(
+  isTypeSupported: (mimeType: string) => boolean,
+): string | undefined {
+  return AUDIO_MIME_TYPES.find(isTypeSupported);
+}
 
 interface UseChatOptions {
   conversationId: string | null;
@@ -26,6 +41,9 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadLabel, setUploadLabel] = useState<string | null>(null);
   const [pendingUpload, setPendingUpload] = useState<PendingUpload | null>(null);
+  // Server-side web rules (authoritative over the local counters).
+  const [webLocked, setWebLocked] = useState(false);
+  const [serverLimitReached, setServerLimitReached] = useState(false);
   const mediaInputRef = useRef<HTMLInputElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -79,6 +97,14 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
     [selfId, mapApiMessage, normalizeMessages],
   );
 
+  /** Apply backend business codes; returns true when the error was handled. */
+  const applyServerRule = (err: unknown): boolean => {
+    const code = getErrorCode(err);
+    if (code === 'WEB_TRIAL_EXPIRED') { setWebLocked(true); return true; }
+    if (code === 'WEB_MESSAGE_LIMIT') { setServerLimitReached(true); return true; }
+    return false;
+  };
+
   // ── socket realtime ──
 
   useEffect(() => {
@@ -116,8 +142,9 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
       appendMessage(msg);
       setReplyTo(null);
     } catch (err) {
-      setChatError(err instanceof Error ? err.message : 'Erreur envoi');
       setInput(text);
+      if (applyServerRule(err)) return;
+      setChatError(toFriendlyErrorMessage(err, 'Impossible d envoyer ton message.'));
     }
   };
 
@@ -147,8 +174,9 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
         : file.type.startsWith('video/')
           ? 'video'
           : 'file';
+      if (applyServerRule(err)) return;
       setPendingUpload({ kind, file });
-      setChatError(err instanceof Error ? err.message : 'Erreur envoi média');
+      setChatError(toFriendlyErrorMessage(err, 'Impossible d envoyer ce fichier.'));
     }
   };
 
@@ -158,11 +186,19 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
       mediaRecorderRef.current?.stop();
       return;
     }
+    let stream: MediaStream | undefined;
     try {
       setChatError(null);
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunksRef.current = [];
-      const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      const mimeType =
+        typeof MediaRecorder.isTypeSupported === 'function'
+          ? selectAudioMimeType((type) => MediaRecorder.isTypeSupported(type))
+          : undefined;
+      const recorder = new MediaRecorder(
+        stream,
+        mimeType ? { mimeType } : undefined,
+      );
       mediaRecorderRef.current = recorder;
       setIsRecordingAudio(true);
 
@@ -173,7 +209,13 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
       recorder.onstop = async () => {
         setIsRecordingAudio(false);
         stream.getTracks().forEach((t) => t.stop());
-        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const recordedType =
+          recorder.mimeType || audioChunksRef.current.find((chunk) => chunk.type)?.type;
+        if (!recordedType?.startsWith('audio/')) {
+          setChatError('Le format audio est incompatible avec cet appareil.');
+          return;
+        }
+        const blob = new Blob(audioChunksRef.current, { type: recordedType });
         if (!blob.size) return;
         try {
           beginUpload('Upload audio');
@@ -182,15 +224,17 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
           finishUpload();
         } catch (err) {
           finishUpload();
+          if (applyServerRule(err)) return;
           setPendingUpload({ kind: 'audio', blob });
-          setChatError(err instanceof Error ? err.message : 'Erreur envoi audio');
+          setChatError(toFriendlyErrorMessage(err, 'Impossible d envoyer ce message audio.'));
         }
       };
 
       recorder.start();
     } catch (err) {
+      stream?.getTracks().forEach((track) => track.stop());
       setIsRecordingAudio(false);
-      setChatError(err instanceof Error ? err.message : 'Micro indisponible');
+      setChatError(toFriendlyErrorMessage(err, 'Le microphone est indisponible sur cet appareil.'));
     }
   };
 
@@ -219,7 +263,7 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
       finishUpload();
     } catch (err) {
       finishUpload();
-      setChatError(err instanceof Error ? err.message : 'Échec du retry upload');
+      setChatError(toFriendlyErrorMessage(err, 'La reprise de l envoi a echoue. Reessaie.'));
     }
   };
 
@@ -232,7 +276,7 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
       const msgs = await conversationApi.getMessages(convId);
       setMessages(normalizeMessages(msgs.map((m) => mapApiMessage(m, selfId))));
     } catch (err) {
-      setChatError(err instanceof Error ? err.message : 'Erreur chargement');
+      setChatError(toFriendlyErrorMessage(err, 'Impossible de charger la conversation.'));
     } finally {
       setChatLoading(false);
     }
@@ -276,8 +320,12 @@ export function useChat({ conversationId, selfId, active }: UseChatOptions) {
     reset,
     mapApiMessage,
     normalizeMessages,
+    applyServerRule,
+    webLocked,
     selfMessageCount: messages.filter((m) => m.sender === 'self').length,
     hasPeerReply: messages.some((m) => m.sender === 'peer'),
-    hardLimitReached: messages.filter((m) => m.sender === 'self').length >= WEB_MESSAGE_LIMIT,
+    hardLimitReached:
+      serverLimitReached
+      || messages.filter((m) => m.sender === 'self').length >= WEB_MESSAGE_LIMIT,
   };
 }
