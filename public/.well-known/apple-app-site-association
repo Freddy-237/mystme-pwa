@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["W898LMQMAQ.com.example.mystme", "W898LMQMAQ.com.mystme.app"],
+        "components": [{ "/": "/c/*", "comment": "Invite links" }]
+      }
+    ]
+  }
+}
