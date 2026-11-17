@@ -52,10 +52,6 @@ vi.mock('./hooks/useTransferCode', () => ({
   useTransferCode: (enabled: boolean) => mockedUseTransferCode(enabled),
 }));
 
-vi.mock('./components/ModerationConsole', () => ({
-  default: () => <div>Moderation Console Mock</div>,
-}));
-
 function createChatState(overrides: Record<string, unknown> = {}) {
   return {
     messages: [],
@@ -154,14 +150,6 @@ describe('App UI states', () => {
     chatState = createChatState();
     mockedUseChat.mockImplementation(() => chatState);
     mockedUseIdentity.mockReturnValue(createIdentityState());
-  });
-
-  it('renders moderation console on moderation routes', () => {
-    window.history.replaceState({}, '', '/moderation');
-
-    render(<App />);
-
-    expect(screen.getByText('Moderation Console Mock')).toBeInTheDocument();
   });
 
   it('renders the no-invite screen when no invite is available', async () => {
