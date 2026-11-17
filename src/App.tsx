@@ -12,7 +12,6 @@ import Header from './components/Header';
 import MessageList from './components/MessageList';
 import UpsellBanner from './components/UpsellBanner';
 import ChatFooter from './components/ChatFooter';
-import ModerationConsole from './components/ModerationConsole';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import type { ResolveLinkDto } from './services/conversation';
 
@@ -21,9 +20,6 @@ type Screen = 'loading' | 'no-invite' | 'landing' | 'chat';
 function App() {
   if (window.location.pathname.startsWith('/privacy')) {
     return <PrivacyPolicy />;
-  }
-  if (window.location.pathname.startsWith('/moderation')) {
-    return <ModerationConsole />;
   }
 
   return <InviteApp />;

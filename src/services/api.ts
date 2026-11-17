@@ -40,42 +40,6 @@ export interface LinkResponse {
   shareUrl: string;
 }
 
-export interface ModerationReport {
-  id: string;
-  conversation_id: string;
-  message_id: string | null;
-  reported_by: string;
-  reported_user_id?: string | null;
-  reporter_pseudo?: string | null;
-  reason: string;
-  already_reported?: boolean;
-  status: 'pending' | 'reviewed' | 'dismissed';
-  created_at: string;
-  reviewed_at?: string | null;
-  reviewed_by?: string | null;
-  decision_note?: string | null;
-  owner_id: string;
-  anonymous_id: string | null;
-  owner_pseudo?: string | null;
-  anonymous_pseudo?: string | null;
-  reported_message_sender_id?: string | null;
-  reported_message_content?: string | null;
-  reported_message_created_at?: string | null;
-  total_report_count?: number;
-  unique_reporter_count?: number;
-  auto_flag_threshold?: number;
-  auto_flagged?: boolean;
-}
-
-export interface ReviewModerationReportPayload {
-  decision: 'reviewed' | 'dismissed';
-  note?: string;
-  blockConversation?: boolean;
-  hideMessage?: boolean;
-  banUser?: boolean;
-  banReason?: string;
-}
-
 // ─── Identity ───
 
 export const identityApi = {
@@ -123,27 +87,4 @@ export const linkApi = {
   /** Deactivate a link. */
   deactivate: (linkId: string) =>
     request<LinkResponse>(`/link/${linkId}`, { method: 'DELETE' }),
-};
-
-const moderationHeaders = (apiKey: string, actor: string) => ({
-  'x-moderation-api-key': apiKey,
-  'x-moderation-actor': actor,
-});
-
-export const moderationApi = {
-  listReports: (apiKey: string, actor: string, status: string) =>
-    request<ModerationReport[]>(`/moderation/reports?status=${encodeURIComponent(status)}`, {
-      headers: moderationHeaders(apiKey, actor),
-    }),
-
-  reviewReport: (
-    apiKey: string,
-    actor: string,
-    reportId: string,
-    payload: ReviewModerationReportPayload,
-  ) => request<ModerationReport>(`/moderation/report/${reportId}/review`, {
-    method: 'POST',
-    headers: moderationHeaders(apiKey, actor),
-    body: JSON.stringify(payload),
-  }),
 };

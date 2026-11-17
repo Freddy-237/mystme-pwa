@@ -32,7 +32,6 @@ export default defineConfig({
       '/conversation': 'http://localhost:5000',
       '/message': 'http://localhost:5000',
       '/trust': 'http://localhost:5000',
-      '/moderation': 'http://localhost:5000',
       '/health': 'http://localhost:5000',
     },
   },
