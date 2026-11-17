@@ -14,7 +14,7 @@ export class HttpRequestError extends Error {
 
 export const API_BASE = (
   import.meta.env.VITE_API_URL ||
-  'https://api-mystme-production.up.railway.app'
+  'https://api.myst-me.com'
 )
   .trim()
   .replace(/\/+$/, '');

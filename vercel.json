@@ -6,7 +6,7 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://api-mystme-production.up.railway.app"
+    "VITE_API_URL": "https://api.myst-me.com"
   },
   "headers": [
     {
