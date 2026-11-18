@@ -7,7 +7,7 @@ describe('PrivacyPolicy', () => {
     render(<PrivacyPolicy />);
     expect(screen.getByRole('heading', { level: 1, name: 'Politique de confidentialité' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Supprimer ton compte' })).toBeInTheDocument();
-    expect(screen.getAllByText(/contact@fridevs\.com/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/freddywafo3@gmail\.com/).length).toBeGreaterThan(0);
     expect(screen.getByText(/Dernière mise à jour/)).toBeInTheDocument();
   });
 });
