@@ -38,7 +38,7 @@ const SECTIONS: { title: string; body: string }[] = [
   },
   {
     "title": "Combien de temps nous les gardons",
-    "body": "• Compte créé dans l'application : jusqu'à ce que tu le supprimes.\n• Session ouverte depuis le site web sans installer l'application : tu peux écrire pendant 7 jours, puis lire pendant 30 jours ; elle est ensuite effacée automatiquement avec ses conversations.\n• Un message que tu supprimes disparaît de la conversation ; il est effacé définitivement de nos serveurs lors de la suppression du compte ou de la conversation.\n• Codes de vérification par email : 10 minutes.\n• Compteurs anti-abus liés à l'adresse IP : 24 heures."
+    "body": "• Compte créé dans l'application : jusqu'à ce que tu le supprimes.\n• Session ouverte depuis le site web sans installer l'application : tu peux écrire pendant 7 jours, puis lire pendant 30 jours ; elle est ensuite effacée automatiquement avec ses conversations.\n• Un message que tu supprimes disparaît de la conversation ; il est effacé définitivement de nos serveurs lors de la suppression du compte ou de la conversation. Une photo, une vidéo, un audio ou un fichier que tu supprimes est effacé de nos serveurs tout de suite, sauf s'il fait l'objet d'un signalement en cours d'examen.\n• Contenus signalés : une copie du message signalé et de quelques messages autour est conservée pour la modération, même si le compte ou la conversation est supprimé, jusqu'à 6 mois après la décision.\n• Sauvegardes de sécurité, chiffrées : 14 jours.\n• Codes de vérification par email : 10 minutes.\n• Compteurs anti-abus liés à l'adresse IP : 24 heures."
   },
   {
     "title": "Supprimer ton compte",
