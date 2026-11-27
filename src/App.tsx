@@ -54,13 +54,30 @@ function InviteApp() {
     return () => clearInterval(timer);
   }, [expiresAt]);
 
-  // Decide initial screen when identity is ready
+  // Decide initial screen when identity is ready. A visitor who already wrote
+  // through this link goes straight back to their conversation; only a first
+  // visit shows the "send your first message" landing.
+  const selfId = identity.user?.id ?? null;
   useEffect(() => {
     if (identity.loading) return;
     if (!invite) { setScreen('no-invite'); return; }
     if (identity.error) { setScreen('loading'); return; }
-    setScreen('landing');
-  }, [identity.loading, identity.error, invite]);
+    if (!selfId) { setScreen('landing'); return; }
+    let alive = true;
+    setScreen('loading');
+    conversationApi.findByInvite(invite.inviteCode)
+      .then(async (found) => {
+        if (!alive) return;
+        setResolvedContext(found);
+        setConversationId(found.conversationId);
+        await chat.loadMessages(found.conversationId);
+        if (alive) setScreen('chat');
+      })
+      .catch(() => { if (alive) setScreen('landing'); });
+    return () => { alive = false; };
+    // chat.loadMessages is recreated each render; the lookup must run once per identity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [identity.loading, identity.error, invite, selfId]);
 
   // -- derived values --
   const remainingMs = expiresAt ? expiresAt - now : null;
