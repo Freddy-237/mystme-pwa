@@ -31,6 +31,10 @@ export const conversationApi = {
       body: JSON.stringify({ inviteCode }),
     }),
 
+  /** My existing conversation through this invite (404 if none). Never creates one. */
+  findByInvite: (inviteCode: string) =>
+    request<ResolveLinkDto>(`/conversation/by-invite/${encodeURIComponent(inviteCode)}`),
+
   start: (inviteCode: string) =>
     request<ResolveLinkDto>('/conversation/resolve-link', {
       method: 'POST',

@@ -28,8 +28,13 @@ vi.mock('./hooks/useChat', () => ({
   useChat: (options: unknown) => mockedUseChat(options),
 }));
 
+const mockedFindByInvite = vi.fn<(inviteCode: string) => Promise<ResolveLinkDto>>(
+  () => Promise.reject(new Error('404')),
+);
+
 vi.mock('./services/conversation', () => ({
   conversationApi: {
+    findByInvite: (inviteCode: string) => mockedFindByInvite(inviteCode),
     resolveInvite: (inviteCode: string) => mockedResolveInvite(inviteCode),
     sendMessage: (
       conversationId: string,
@@ -159,6 +164,19 @@ describe('App UI states', () => {
 
     expect(await screen.findByText('Envoie et reçois des messages anonymes.')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: "Télécharger l'app" })).toHaveAttribute('href', 'https://store.example/app');
+  });
+
+  it('takes a returning visitor straight back to their conversation', async () => {
+    mockedParseInvite.mockReturnValue({ inviteCode: 'ABC123', senderName: 'Mika' });
+    mockedFindByInvite.mockResolvedValueOnce(createResolvedContext());
+
+    render(<App />);
+
+    expect(await screen.findByText('Tu es anonyme dans cette conversation')).toBeInTheDocument();
+    expect(mockedFindByInvite).toHaveBeenCalledWith('ABC123');
+    expect(chatState.loadMessages).toHaveBeenCalledWith('conv-1');
+    expect(screen.queryByRole('button', { name: 'Envoyer anonymement' })).not.toBeInTheDocument();
+    expect(mockedResolveInvite).not.toHaveBeenCalled();
   });
 
   it('renders a friendly identity error state', () => {
